@@ -1,0 +1,139 @@
+{
+  "9cards": [
+    {
+      "id": 1,
+      "metier": "Cutting",
+      "image": "../images/cards/cutting.jpg"
+    },
+    {
+      "id": 2,
+      "metier": "Paint",
+      "image": "../images/cards/paint.jpg"
+    },
+    {
+      "id": 3,
+      "metier": "Welding",
+      "image": "../images/cards/welding.jpg"
+    },
+    {
+      "id": 4,
+      "metier": "Assembly",
+      "image": "../images/cards/assembly.jpg"
+    },
+    {
+      "id": 5,
+      "metier": "Molding",
+      "image": "../images/cards/molding.jpg"
+    },
+    {
+      "id": 6,
+      "metier": "Car Assembly",
+      "image": "../images/cards/car_assembly.jpg"
+    },
+    {
+      "id": 7,
+      "metier": "Stamping(Folding)",
+      "image": "../images/cards/stamping.jpg"
+    },
+    {
+      "id": 8,
+      "metier": "Cleaning",
+      "image": "../images/cards/cleaning.jpg"
+    },
+    {
+      "id": 9,
+      "metier": "technical control",
+      "image": "../images/cards/technical_control.jpg"
+    }
+  ],
+
+  "contrainte": {
+      "3players": [
+          [
+              ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"],
+              ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+              ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"]
+          ],
+          [
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"],
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/stamping.jpg'> <img class='contrainte' src='images/cards/technical_control.jpg'>"],
+        ["<img class='contrainte' src='images/cards/stamping.jpg'> <img class='contrainte' src='images/cards/car_assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/car_assembly.jpg'>"]
+      ]
+    ],
+    "4players": [
+      [
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"],
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/car_assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/paint.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"],
+        ["<img class='contrainte' src='images/cards/stamping.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/cleaning.jpg'> <img class='contrainte' src='images/cards/car_assembly.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/stamping.jpg'>"],
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"]
+      ]
+    ],
+    "5players": [
+      [
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"],
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/paint.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/welding.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"],
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/stamping.jpg'>"]
+      ]
+    ],
+    "6players": [
+      [
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"],
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cutting.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/paint.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/paint.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/welding.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"],
+        ["<img class='contrainte' src='images/cards/assembly.jpg'> <img class='contrainte' src='images/cards/welding.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"],
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/assembly.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/stamping.jpg'>"],
+        ["<img class='contrainte' src='images/cards/car_assembly.jpg'> <img class='contrainte' src='images/cards/cleaning.jpg'>"]
+      ],
+      [
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/molding.jpg'>"],
+        ["<img class='contrainte' src='images/cards/technical_control.jpg'> <img class='contrainte' src='images/cards/stamping.jpg'>"]
+      ]
+    ]
+  }
+}
