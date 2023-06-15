@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Network Knight Game</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    <body>
+        <header>
+            <div >
+                <% if(utilisateur){ %>
+                <div id="show_firstname">
+                    <p>Welcome <%= utilisateur.firstname %> ! </p>
+                    <form action="/deconnexion" method="get" id="logout_btn"><button type="submit" class="header_btn">LOGOUT</button></form>
+                    <form action="/" method="get"><button type="submit" class="header_btn">LOBBY</button></form>
+                    <a id="help" class="header_btn" href="http://localhost:1340/theGuardians/help.html">Help</a>
+                </div>
+
+                <% } else { %>
+
+                <% if (adminIncoming !== false) { %>
+
+                <% if (errorPasswordMessage) { %>
+                <div id="errorMessage"><%= errorPasswordMessage %></div>
+                <% } %>
+
+                <div id="adminIncoming">
+                    <form action="/verifpassword" method="post" id="form_inscription">
+                        <div> <input type="password" name="password" placeholder="password"> </div>
+                        <button type="submit">VALID</button>
+                    </form> 
+                    <form action="/deconnexion" method="get" id="logout_btn"> <button type="submit" class="header_btn">LOGOUT</button> </form>
+                </div>
+
+
+                <% } else { %>
+                <% if (errorNameMessage) { %>
+                <div id="errorMessage"><%= errorNameMessage %></div>
+                <% } %>
+
+                <form action="/inscription" method="post" id="form_inscription">
+                    <div>
+                        <input type="text" name="firstname" placeholder="First name">
+                    </div>
+                    <button type="submit">LOGIN</button>
+                </form>
+                <% } %>
+                <% } %>
+
+            </div>
+        </header>
+
+
+        <div id="freeze-overlay"></div>
+
+        <div id="countdown">
+            <div id="timer-container">
+                <div id="timer">
+                    <span id="timer-minutes"></span>:<span id="timer-seconds"></span>
+                </div>
+                <div id="timer-buttons">
+                    <button id="start">
+                        <img class="timerButtons" src="images/buttons/play.png" alt="Start">
+                    </button>
+                    <button id="pause">
+                        <img class="timerButtons" src="images/buttons/pause.png" alt="Pause">
+                    </button>
+                    <button id="reset">
+                        <img class="timerButtons" src="images/buttons/reset.png" alt="Reset">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="listplayer">
+            <ul id="players_names_list"></ul>
+        </div>
+
+        <div id="game-board">
+            <div id="card/0/0/0" class="card">
+                <div class="corner-box top-left" id="target/-1/0"></div>
+                <div class="corner-box top-right" id="target/0/1"></div>
+                <div class="corner-box bottom-left" id="target/0/-1"></div>
+                <div class="corner-box bottom-right" id="target/1/0"></div>
+
+                <img src="images/network1.jpg" alt="Network Card" draggable="true">
+            </div>
+        </div>
+
+        <div class="invisible-div">
+        </div>
+
+        <div id="info-bar">
+            <div id="talk-token" style="color: green;">Talk: Allowed</div>
+            <div id="turn-counter">Turns: 0</div>
+        </div>
+
+        <div id="main-container">
+            <div id="player-hand"> </div>
+            <div id="deck" class="deck-container">
+                <img class="thumbnail" src="images/deck.png" alt="Deck" id="deck-card">
+            </div>
+        </div>
+
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="dragdrop.js"></script>
+        <script src="game.js"></script>
+        <script src="count.js"></script>
+    </body>
+</html>

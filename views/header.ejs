@@ -1,0 +1,42 @@
+<header>
+  <div >
+    <% if(utilisateur){ %>
+      <div id="show_firstname">
+        <p>Welcome <%= utilisateur.firstname %> ! </p>
+        <form action="/deconnexion" method="get" id="logout_btn"><button type="submit" class="header_btn">LOGOUT</button></form>
+        <form action="/" method="get"><button type="submit" class="header_btn">LOBBY</button></form>
+      </div>
+
+    <% } else { %>
+
+      <% if (adminIncoming !== false) { %>
+
+        <% if (errorPasswordMessage) { %>
+          <div id="errorMessage"><%= errorPasswordMessage %></div>
+        <% } %>
+
+        <div id="adminIncoming">
+          <form action="/verifpassword" method="post" id="form_inscription">
+            <div> <input type="password" name="password" placeholder="password"> </div>
+            <button type="submit">VALID</button>
+          </form> 
+          <form action="/deconnexion" method="get" id="logout_btn"> <button type="submit" class="header_btn">LOGOUT</button> </form>
+        </div>
+
+
+      <% } else { %>
+        <% if (errorNameMessage) { %>
+          <div id="errorMessage"><%= errorNameMessage %></div>
+        <% } %>
+
+        <form action="/inscription" method="post" id="form_inscription">
+          <div>
+            <input type="text" name="firstname" placeholder="First name">
+          </div>
+          <button type="submit">LOGIN</button>
+        </form>
+      <% } %>
+    <% } %>
+
+  </div>
+</header>

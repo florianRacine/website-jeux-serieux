@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="eeStyle.css">
+    <title>Extreme Evolution</title>
+</head>
+<body>
+    <%- include("../header.ejs", {utilisateur}) %>
+
+    <div id="timer-container">
+        <div id="timer">
+            <span id="timer-minutes"></span>:<span id="timer-seconds"></span>
+        </div>
+        <div id="timer-buttons">
+            <button id="start">
+                <img class="timerButtons" src="images/buttons/play.png" alt="Start">
+            </button>
+            <button id="pause">
+                <img class="timerButtons" src="images/buttons/pause.png" alt="Pause">
+            </button>
+            <button id="reset">
+                <img class="timerButtons" src="images/buttons/reset.png" alt="Reset">
+            </button>
+        </div>
+    </div>
+
+    <ul id="players_names_list"></ul>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="eeClient.js"></script>
+</body>
+</html>

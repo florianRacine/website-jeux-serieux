@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="leanStyle.css">
+    <title>Lean Management</title>
+</head>
+<body>
+    <header>
+        <div >
+          <% if(utilisateur){ %>
+            <div id="show_firstname">
+              <p>Welcome <%= utilisateur.firstname %> ! </p>
+              <form action="/deconnexion" method="get" id="logout_btn"><button type="submit" class="header_btn">Logout</button></form>
+              <form action="/" method="get"><button type="submit" class="header_btn">Lobby</button></form>  </p>
+      
+            </div>
+          <% } else { %>
+      
+            <% if (errorNameMessage) { %>
+              <div id="errorMessage"><%= errorNameMessage %></div>
+            <% } %>      
+      
+            <form action="/inscription" method="post" id="form_inscription">
+              <div>
+                <input type="text" name="firstname" placeholder="First name">
+              </div>
+              <button type="submit">Inscription</button>
+            </form>          
+          <% } %>
+          
+        </div>
+    </header>
+
+    <div id="page">
+        <div id="partleft">
+            <div id="partplayer">
+                <h1> player list </h1>
+                <div id="listplayer">
+                    <ul id="players_names_list"></ul>
+                </div>
+            </div>
+    
+            <div id="partcard">
+                <h1>constraints</h1>
+                <div id="listcart">
+                    <div id="myList"></div>
+                </div>
+            </div>
+            <div id="leftdown">
+                <button class="gameButtons" id="buttonRules" role="button">RULES</button>
+            </div>
+        </div>
+    
+        <div id="AllButtons">
+            <div id="timer-container">
+                <div id="timer">
+                    <span id="timer-minutes"></span>:<span id="timer-seconds"></span>
+                </div>
+                <div id="timer-buttons">
+                    <button id="start">
+                        <img class="timerButtons" src="images/buttons/play.png" alt="Start">
+                    </button>
+                    <button id="pause">
+                        <img class="timerButtons" src="images/buttons/pause.png" alt="Pause">
+                    </button>
+                    <button id="reset">
+                        <img class="timerButtons" src="images/buttons/reset.png" alt="Reset">
+                    </button>
+                </div>
+            </div>
+            <button class="gameButtons" id="buttonEnd" role="button">END</button>
+            <button class="gameButtons" id="buttonLaunch" role="button">LAUNCH</button>
+            <button class="gameButtons" id="buttonMix" role="button">MIX</button>
+            <button class="gameButtons" id="buttonRefresh" role="button">REFRESH</button>
+            <button class="gameButtons" id="buttonValid" role="button">VALID</button>
+            <button class="gameButtons" id="buttonUndo" role="button">UNDO</button>
+        </div>
+
+        <div id="partright">
+            <div class="game_board" id="gameBoard">
+                <div class="map-outer">
+                    <div class="map-inner">
+                      <table id="table_jeu"> 
+                        <tr id =L0>
+                          <td id ="boxL0C0" class="box"></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+            </div>
+            <div id="rightdown">
+                <div>
+                    <img src="images/cards/cutting.jpg" id="im0" class="deplace" draggable="true">
+                    <img src="images/cards/paint.jpg" id="im1" class="deplace" draggable="true">
+                    <img src="images/cards/welding.jpg" id="im2" class="deplace" draggable="true">
+                    <img src="images/cards/assembly.jpg" id="im3" class="deplace" draggable="true">
+                    <img src="images/cards/molding.jpg" id="im4" class="deplace" draggable="true">
+                    <img src="images/cards/car_assembly.jpg" id="im5" class="deplace" draggable="true">
+                    <img src="images/cards/stamping.jpg" id="im6" class="deplace" draggable="true">
+                    <img src="images/cards/cleaning.jpg" id="im7" class="deplace" draggable="true">
+                    <img src="images/cards/technical_control.jpg" id="im8" class="deplace" draggable="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="leanClient.js"></script>
+</body>
+</html>
