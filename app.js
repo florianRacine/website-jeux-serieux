@@ -21,9 +21,11 @@ let adminIncoming = false;
 // ============= SERVER =============
 // ==================================
 
-// const Server = http.createServer(app)
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server is running on port ${process.env.PORT || 3000}`);
+app.set("port", process.env.PORT || 3000);
+
+const server = http.createServer(app);
+server.listen(app.get("port"), () => {
+  console.log(`Server is running on port ${app.get("port")}`);
 });
 
 // =====================================
@@ -59,14 +61,14 @@ app.set("views", path.join(__dirname, "views")); // path of all views
 
 app.get("/", (req, res) => {
   const { utilisateur } = res.locals;
-  res.render("index", { games, utilisateur, errorNameMessage, adminIncoming, errorPasswordMessage});
+  res.render("index", { games, utilisateur, errorNameMessage, adminIncoming, errorPasswordMessage });
 });
 
 app.post("/inscription", (req, res) => {
   const { firstname } = req.body;
   errorNameMessage = "";
 
-  if (firstname){
+  if (firstname) {
     let playerExist = false;
     if (firstname !== "admin") { // possible to have severals administrators
       playerExist = (utilisateurs.some(
@@ -77,8 +79,8 @@ app.post("/inscription", (req, res) => {
       return res.redirect("/");
     }
 
-    if (!playerExist){
-      if (isValidUserName(firstname)){
+    if (!playerExist) {
+      if (isValidUserName(firstname)) {
         let nouvelUtilisateur = {
           "id": uuidv4(),
           "firstname": firstname,
@@ -92,17 +94,17 @@ app.post("/inscription", (req, res) => {
     } else { 
       errorNameMessage = `${firstname} is already used`
     }
-  } else{
+  } else {
     errorNameMessage = "The field is empty"
   }
 
   const { utilisateur } = res.locals;
-  res.render("index", {games, utilisateur, errorNameMessage, adminIncoming})
+  res.render("index", { games, utilisateur, errorNameMessage, adminIncoming });
 });
 
 function isValidUserName(nameToTest) {
   if (!/^[a-zA-Z0-9]+$/.test(nameToTest)) {  
-    errorNameMessage = 'You are using wrong caracters'
+    errorNameMessage = 'You are using wrong characters'
     return false;
   }
 
@@ -117,7 +119,7 @@ function isValidUserName(nameToTest) {
 app.post("/verifpassword", (req, res) => {
   const { password } = req.body;
 
-  if (password === process.env.ADMPSW){ // password's good 
+  if (password === process.env.ADMPSW) { // password's good 
     let nouvelUtilisateur = {
       "id": uuidv4(),
       "firstname": "admin",
@@ -184,7 +186,7 @@ app.get("/extremeEvolution", protectionRoute, (req, res) => {
   res.render("games/extremeEvolution", { utilisateur });
 });
 
-// ======= Frentetique maintenance =======
+// ======= Frenetic Maintenance =======
 app.get("/freneticMaintenance", protectionRoute, (req, res) => {
   const { utilisateur } = res.locals;
   res.render("games/freneticMaintenance", { utilisateur });
