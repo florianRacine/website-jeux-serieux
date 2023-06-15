@@ -22,40 +22,8 @@ let adminIncoming = false;
 // ==================================
 
 // const Server = http.createServer(app)
-// Server.listen(process.env.LEANPORT, () => {
-//   console.log(`Lean Management runs on ${process.env.LEANPORT}'s port`);
-// });
-
-// ======= Lean Management server =======
-const leanServer = http.createServer(app)
-const ioLean = require('./ioServers/LeanManagement');
-ioLean(leanServer);
-leanServer.listen(process.env.LEANPORT, () => {
-  console.log(`Lean Management runs on ${process.env.LEANPORT}'s port`);
-});
-
-// ======= Extreme Evolution server =======
-const serverExtreme = http.createServer(app)
-const ioForEE = require('./ioServers/ExtremeEvolution');
-ioForEE(serverExtreme);
-serverExtreme.listen(process.env.EXTREMEPORT, () => {
-  console.log(`Extreme Evolution runs on ${process.env.EXTREMEPORT}'s port`);
-});
-
-// ======= Frenetic Maintenance server =======
-const freneticServer = http.createServer(app)
-const ioFrenetic = require('./ioServers/FreneticMaintenance');
-ioFrenetic(freneticServer);
-freneticServer.listen(process.env.FRENETICPORT, () => {
-  console.log(`Frenetic Maintenance runs on ${process.env.FRENETICPORT}'s port`);
-});
-
-// ======= Frenetic Maintenance server =======
-const guardiansServer = http.createServer(app)
-const ioGuardians = require('./ioServers/theGuardians');
-ioGuardians(guardiansServer);
-guardiansServer.listen(process.env.GUARDIANSPORT, () => {
-  console.log(`The Guardians runs on ${process.env.GUARDIANSPORT}'s port`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server is running on port ${process.env.PORT || 3000}`);
 });
 
 // =====================================
