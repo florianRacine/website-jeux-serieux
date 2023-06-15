@@ -9,9 +9,11 @@ const http = require("http");
 const path = require("path");
 const { v4: uuidv4 } = require('uuid');
 const helmet = require("helmet");
+const session = require("express-session");
+const RedisStore = require("connect-redis")(session);
+const redis = require("redis");
 
 // ======= variables =======
-const { sessionMiddleware } = require("./controllers/sessionsController");
 const { games, utilisateurs } = require("./controllers/data");
 let errorNameMessage = "";
 let errorPasswordMessage = "";
@@ -34,10 +36,19 @@ server.listen(app.get("port"), () => {
 
 app.use(helmet()); 
 
-app.use(sessionMiddleware); // server use session
+const redisClient = redis.createClient(process.env.REDIS_URL);
+
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // server can use json
+app.use(express.json());
 
 app.use((req, res, next) => { 
   const { idUtilisateur } = req.session;
@@ -49,10 +60,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, "public"))); // set the static path
-
-app.set("view engine", "ejs"); // set the type of views
-app.set("views", path.join(__dirname, "views")); // path of all views
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 
 // ===========================================
@@ -70,10 +80,8 @@ app.post("/inscription", (req, res) => {
 
   if (firstname) {
     let playerExist = false;
-    if (firstname !== "admin") { // possible to have severals administrators
-      playerExist = (utilisateurs.some(
-        (user) => user.firstname === firstname
-      ));
+    if (firstname !== "admin") {
+      playerExist = utilisateurs.some((user) => user.firstname === firstname);
     } else {
       adminIncoming = true;
       return res.redirect("/");
@@ -82,9 +90,9 @@ app.post("/inscription", (req, res) => {
     if (!playerExist) {
       if (isValidUserName(firstname)) {
         let nouvelUtilisateur = {
-          "id": uuidv4(),
-          "firstname": firstname,
-          "game": {}
+          id: uuidv4(),
+          firstname: firstname,
+          game: {},
         };
         utilisateurs.push(nouvelUtilisateur);
         req.session.idUtilisateur = nouvelUtilisateur.id;
@@ -92,10 +100,10 @@ app.post("/inscription", (req, res) => {
         return res.redirect("/");
       }
     } else { 
-      errorNameMessage = `${firstname} is already used`
+      errorNameMessage = `${firstname} is already used`;
     }
   } else {
-    errorNameMessage = "The field is empty"
+    errorNameMessage = "The field is empty";
   }
 
   const { utilisateur } = res.locals;
@@ -104,12 +112,12 @@ app.post("/inscription", (req, res) => {
 
 function isValidUserName(nameToTest) {
   if (!/^[a-zA-Z0-9]+$/.test(nameToTest)) {  
-    errorNameMessage = 'You are using wrong characters'
+    errorNameMessage = 'You are using wrong characters';
     return false;
   }
 
   if (nameToTest.length > 8) {
-    errorNameMessage = 'This name is too long'
+    errorNameMessage = 'This name is too long';
     return false;
   }
   
@@ -121,9 +129,9 @@ app.post("/verifpassword", (req, res) => {
 
   if (password === process.env.ADMPSW) { // password's good 
     let nouvelUtilisateur = {
-      "id": uuidv4(),
-      "firstname": "admin",
-      "game": {}
+      id: uuidv4(),
+      firstname: "admin",
+      game: {},
     };
     utilisateurs.push(nouvelUtilisateur);
     req.session.idUtilisateur = nouvelUtilisateur.id;
@@ -133,24 +141,20 @@ app.post("/verifpassword", (req, res) => {
     return res.redirect("/");
 
   } else { 
-    errorPasswordMessage = "Wrong password"
+    errorPasswordMessage = "Wrong password";
     return res.redirect("/");
   }
 });
 
 app.get("/deconnexion", (req, res) => {
   adminIncoming = false;
-  // delete the player in the json
   const { idUtilisateur } = req.session;
-  const index = utilisateurs.findIndex(
-    (utilisateur) => utilisateur.id === idUtilisateur
-  );
+  const index = utilisateurs.findIndex((utilisateur) => utilisateur.id === idUtilisateur);
   if (index !== -1) {
     console.log(`Bye ${utilisateurs[index].firstname}`);
     utilisateurs.splice(index, 1);
   }
 
-  // delete the session 
   req.session.destroy((err) => {
     if (err) {
       return res.redirect("/");
@@ -167,8 +171,8 @@ app.get("/deconnexion", (req, res) => {
 
 const protectionRoute = (req, res, next) => {
   if (!req.session.idUtilisateur) {
-    errorNameMessage = "You must enter a name"
-    res.redirect("/")
+    errorNameMessage = "You must enter a name";
+    res.redirect("/");
   } else {
     next();
   }
