@@ -1,0 +1,365 @@
+const socketio = require("socket.io");
+const { games, utilisateurs } = require("../controllers/data"); // games pour afficher les rules
+const cardData = require('../public/extremeEvolution/images/cards.json');
+
+const {sessionMiddleware, wrap} = require("../controllers/sessionsController");
+const {authorizeUser} = require("../controllers/socketController");
+
+module.exports = (server) => {
+    // io server
+    const io = socketio(server);
+
+    let AllUsers = utilisateurs;
+    let rules = games[1].rules;
+
+    // player variables
+    let AllPlayers = []; // table of players
+    let player = {}; // the player object
+    let playerId = {player};
+    let list_players_name = []; // list of players names
+    let playingPlayers = []; // players who are playing
+
+    // game variables
+    let gameLaunched = false;
+    let countPswTried = 3;
+
+    // timer
+    let intervalId;
+    var countdown = 600;
+
+    io.use(wrap(sessionMiddleware));
+    io.use(authorizeUser);
+    io.on("connection", function(socket) {
+
+        // ========================================
+        // =========== CONNECTION PHASE ===========
+        // ========================================
+
+        // put the user session in the player 
+        const user_session_id = socket.request.session.idUtilisateur;
+        player = AllUsers.find(
+            (utilisateur) => utilisateur.id === user_session_id
+        );
+        console.log(`\n[Connected to Extreme Evolution] ${player.firstname}`);
+
+        // get the arriving name to the client
+        socket.emit("takename", player.firstname,playerId);
+        
+        // =======================================
+        // ============= SETUP PHASE =============
+        // =======================================
+
+       // if arriving name is "admin", ask a password
+        // else if player connected show rules 
+        // else if spectator connected show instructions
+        if (player.firstname === "admin") socket.emit("ask password", countPswTried) 
+        else if (gameLaunched === false) socket.emit("show rules", player.firstname, rules) 
+        else if (gameLaunched === true) socket.emit("spectator incomming", player.firstname) 
+
+        socket.on("sent password", (password) => {
+            if (password === "aze") {
+                socket.isAdmin = true;
+                socket.emit("display admin buttons", true)
+            } else {
+                countPswTried--
+                if (countPswTried <= 1) socket.emit("cest ciao");
+                socket.emit("password incorrect", password, countPswTried);
+            }
+        });
+        countPswTried = 3 // reset the tries
+        AllPlayers[socket.id] = player;
+        // if game launched don't make the user a player but a spectator unless it is an admin.
+        if ((gameLaunched === false) || (player.firstname === "admin") ) { 
+            
+            AllPlayers[socket.id].game.status = "player";
+            list_players_name = [];
+
+            for (const trigPlayer of Object.values(AllPlayers)) {
+                if ((trigPlayer.firstname !== "admin") && (trigPlayer.game.status === "player")) {
+                    list_players_name.push(trigPlayer.firstname);
+                }
+            }
+
+            io.emit("update players", list_players_name);
+        } 
+        else {
+            AllPlayers[socket.id].game.status = "spectator";
+            socket.emit("update players", list_players_name);
+        }
+        
+
+        // ask if the socket.id is an admin
+        // and return a response to show the different buttons to the current users
+        socket.on("ask is admin", () => {
+            if (socket.isAdmin) {
+                answer = true
+            } else {
+                answer = false
+            }
+            socket.emit("display admin buttons", answer)
+        });
+
+        // transfert all of the spectator in the players
+        socket.on("make spectator playing", () => {
+            if (gameLaunched === false) {
+                list_players_name = [];
+                for (const trigPlayer of Object.values(AllPlayers)) {
+                    trigPlayer.game.status = "player";
+                    if (trigPlayer.firstname !== "admin") {
+                        list_players_name.push(trigPlayer.firstname);
+                    }
+                }
+                
+                io.emit("update players", list_players_name);
+            }
+        });
+
+        // =====================
+        // ======= TIMER =======
+        // =====================
+
+        socket.on('reset', function(data) {
+            countdown = 600;
+            io.sockets.emit('timer', {
+                countdown: countdown
+            });
+        });
+
+        socket.on('pause', function(data) {
+            clearInterval(intervalId);
+        });
+
+        socket.on('startTimer', function(data) {
+            io.sockets.emit('timer', {
+                countdown: countdown
+            });
+            startTimer();
+        });
+
+        function startTimer() {
+            intervalId = setInterval(function() {
+                countdown--;
+                io.sockets.emit('timer', {
+                    countdown: countdown
+                });
+                if (countdown === 0) {
+                    clearInterval(intervalId);
+                    countdown = 600;
+                    io.sockets.emit('timerFinished');
+                }
+            }, 1000);
+
+        }
+        
+        
+
+        // ==============================
+        // ========== GAME STATE ========
+        // ==============================
+
+
+        // Variables globales pour gérer l'état du jeu, 
+        // dans l'objet gameState nous allons stocker toutes les var 
+
+        let gameState = {
+            playerId,
+            players: {},
+            level: 3,
+            lives: 3,
+            meteorites: 2,
+            playedCards: [playerId],
+            faceDown: false
+        };
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        function recupDecks() {
+            let AllDecks = [];
+            const cardsArray = cardData.centcards;
+            let allCards = shuffle([...cardsArray]);
+            
+            for (let i = 0; i < list_players_name.length; i++) {
+                let oneDeck = [];
+                for (let j = 0; j < gameState.level; j++) {
+                    oneDeck.push(allCards[i * gameState.level + j]);
+                }
+                AllDecks.push(oneDeck);
+                console.log("AllDecks after pushing oneDeck:", AllDecks); 
+            }
+            console.log("Final AllDecks:", AllDecks); 
+            return AllDecks;
+        }
+
+        //fin fonction de jeu
+
+        socket.on('begin', () => {
+            // récupérer tout les decks de chaque joueur
+            let deckdeck = recupDecks();
+            console.log("deckdeck:", deckdeck);
+        
+            // give deck to players + Send and show decks to each player
+            let deckIndex = 0;
+            for (let trigId of Object.keys(AllPlayers)) {
+                if (AllPlayers[trigId].firstname !== "admin") {
+                    console.log("Sending deck to:", trigId, "deck:", deckdeck[deckIndex]);  
+                    AllPlayers[trigId].game = {
+                        deck: deckdeck[deckIndex],
+                    };
+                    deckIndex++;
+					io.to(trigId).emit("display deck", AllPlayers[trigId].game.deck);
+					console.log("Emit display deck to " + trigId + " of deck " + AllPlayers[trigId].game.deck)
+                }
+            }
+
+            initGame(AllPlayers);
+			console.log("Server : envoi emit gameState")
+            io.emit("gameState", gameState);
+			//io.emit("updateLives", gameState.lives);
+
+        });
+        
+
+        // Initialisation des joueurs et de l'état du jeu
+        function initGame(players) {
+            gameState.players = players;
+            gameState.level = 1;
+            gameState.lives = Object.keys(players).length;
+            gameState.meteorites = 2;
+            gameState.playedCards = [];
+            gameState.faceDown = false;
+        }
+
+        socket.on('cardClicked', function (id,img){
+            const cardValue = parseInt(cardId.slice(-2));
+            if (cardId.includes("B")){
+                if (cardValue > gameState.playedCards[0]){
+                    gameState.playedCards[0] = cardValue;
+                    gameState.players[id].game.remove(img);
+                } 
+                else {
+					gameState.lives = gameState.lives-1;
+					io.emit("updateLives", gameState.lives);
+					io.emit("Life gone", gameState.lives);
+                }
+            }
+            else {
+                if (cardValue < gameState.playedCards[1]){
+                    return true;
+                } 
+                else {
+					gameState.lives = gameState.lives-1;
+					io.emit("updateLives", gameState.lives);
+					io.emit("Life gone", gameState.lives);
+                } 
+            }
+        });
+        //////////////////////////////////////////////////
+        /////////////////fonction niveau de vie //////////
+        //////////////////////////////////////////////////
+        
+
+        ///////////////////////////////////////////////
+        /////////////////Mélanger les cartes //////////
+        ///////////////////////////////////////////////
+
+
+        /* Vérifie si la carte jouée est valide
+        function isCardPlayValid(playerId, card) {
+        if (gameState.players[playerId] && gameState.players[playerId].cards.includes(card)) {
+            const lastCard = gameState.playedCards[gameState.playedCards.length - 1];
+            return lastCard === undefined || card > lastCard;
+        }
+        return false;
+        }
+        */
+
+
+        //===============================================================
+        //===============================================================
+        // faire la fonction  function goToNextLevel(level, faceDown) 
+        // Cela permet au client d'avoir le bon niveau et de changer de level 
+        //===============================================================
+        //===============================================================
+
+
+        // Utilise une météorite pour se défausser de la carte la plus basse
+        function checkMeteoriteUsage(playerId) {
+            const player = gameState.players[playerId];
+            const numCards = player.cards.length;
+            const maxCardValue = Math.max(...player.cards);
+            const numMaxCards = player.cards.filter((card) => card === maxCardValue).length;
+        
+            // Vérifiez si le joueur a au moins 3 cartes et s'il y a au moins 2 cartes de valeur maximale
+            return numCards >= 3 && numMaxCards >= 2;
+        }
+
+        socket.on("useBlueMeteorite", function (playerId) {
+                // Vérifiez si l'utilisation d'une météorite est autorisée et mettez à jour l'état du jeu
+                const isMeteoriteAllowed = checkMeteoriteUsage(playerId); // Implémentez cette fonction pour vérifier si l'utilisation d'une météorite est autorisée
+            
+                if (isMeteoriteAllowed) {
+                // Retirer toutes les cartes de valeur maximale de la main du joueur
+                const maxCardValue = Math.max(...gameState.players[playerId].cards);
+                gameState.players[playerId].cards = gameState.players[playerId].cards.filter((card) => card !== maxCardValue);
+            
+                // Décrémenter le nombre de météorites restantes et mettre à jour l'état du jeu
+                gameState.meteorites--;
+                io.emit("gameState", gameState);
+                for (let trigId of Object.keys(AllPlayers)) {
+                    if (AllPlayers[trigId].firstname !== "admin") {
+                        io.to(trigId).emit("display deck", AllPlayers[trigId].game.deck);
+                    }
+                }
+                }
+            });
+
+        socket.on("useWhiteMeteorite", function (playerId) {
+        // Vérifiez si l'utilisation d'une météorite est autorisée et mettez à jour l'état du jeu
+        const isMeteoriteAllowed = checkMeteoriteUsage(playerId); // Implémentez cette fonction pour vérifier si l'utilisation d'une météorite est autorisée
+
+        if (isMeteoriteAllowed) {
+            // Retirer toutes les cartes de valeur maximale de la main du joueur
+            const maxCardValue = Math.max(...gameState.players[playerId].cards);
+            gameState.players[playerId].cards = gameState.players[playerId].cards.filter((card) => card !== maxCardValue);
+
+            // Décrémenter le nombre de météorites restantes et mettre à jour l'état du jeu
+            gameState.meteorites--;
+            io.emit("gameState", gameState);
+            for (let trigId of Object.keys(AllPlayers)) {
+                if (AllPlayers[trigId].firstname !== "admin") {
+                    io.to(trigId).emit("display deck", AllPlayers[trigId].game.deck);
+                }
+            }
+        }
+        });
+
+
+        // =================================
+        // =========== END PHASE ===========
+        // =================================
+
+
+       
+        socket.on("disconnect", () => {
+            const disconnectedPlayer = AllPlayers[socket.id];
+            console.log(`\n[Disconnected from Extreme Evolution] ${disconnectedPlayer.firstname}`);
+
+            // remove disconnected player from list_players_name
+            const index = list_players_name.indexOf(disconnectedPlayer.firstname);
+            if (index !== -1) {
+                list_players_name.splice(index, 1);
+            }
+
+            // delete the disconnected player in AllPlayers
+            delete AllPlayers[socket.id]
+
+            io.emit("update players", list_players_name);
+        });
+    });
+};
