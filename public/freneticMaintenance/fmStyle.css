@@ -1,0 +1,15 @@
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid red;
+}
+
+#show_firstname {
+    display: flex;
+    align-items: center;
+}
