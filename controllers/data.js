@@ -9,25 +9,25 @@ const games = [
     The game ends once the shape is completed or after 10 minutes. At the end of the game, points are scored by counting the number of connections made. If you all reach the maximum number of points, you have won. If not, you have not succeeded.
           `,
     image:"/leanManagement/images/leanManagement.png",
-    linkView: `http://serious-games.onrender/leanManagement`,
+    linkView: `https://serious-games.onrender.com/leanManagement`,
   },
   {
     title: "Extreme Evolution",
     rules :"",
     image:"/extremeEvolution/images/extremeEvolution.png",
-    linkView: `http://serious-games.onrender/extremeEvolution`,
+    linkView: `https://serious-games.onrender.com/extremeEvolution`,
   },
   {
     title: "Frenetic Maintenance",
     rules :"",
     image:"/extremeEvolution/images/extremeEvolution.png",
-    linkView: `http://serious-games.onrender/freneticMaintenance`,
+    linkView: `https://serious-games.onrender.com/freneticMaintenance`,
   },
   {
     title: "The Guardians of cybersecurity",
     rules :"",
     image:"/theGuardians/images/theGuardians.png",
-    linkView: `http://serious-games.onrender/theGuardians`,
+    linkView: `https://serious-games.onrender.com/theGuardians`,
   }
 ];
 
